@@ -1,2 +1,2 @@
 #!/bin/sh
-./doom -scaling 3
+./doom -scaling 2

@@ -43,7 +43,7 @@ RUN git clone --recursive --depth=1 https://github.com/KindleModding/kindle-sdk.
 COPY kindle-sdk-nomount.patch /home/user/kindle-sdk-nomount.patch
 
 # Patch and build the SDK
-RUN cd kindle-sdk && git apply /home/user/kindle-sdk-nomount.patch && chmod u+x ./gen-sdk.sh && ./gen-sdk.sh ${SDK_TARGET}
+RUN cd kindle-sdk && chmod u+x ./gen-sdk.sh && git apply --ignore-whitespace /home/user/kindle-sdk-nomount.patch && ./gen-sdk.sh ${SDK_TARGET}
 
 # Copy the bash environment file
 COPY bash-env.sh /home/user/bash-env.sh

@@ -48,7 +48,7 @@ static void preprocessFrame(unsigned char * frame, unsigned char * outFrame) {
       xi = y;
       tb = 0;
       for (x = 0; x < KINDLE_RESX; x++) {
-        yi = 1071 - x;
+        yi = KINDLE_RESX - 1 - x;
         o = x ^ y;
         to = (y >> 2 & 1 | o >> 1 & 2 | y << 1 & 4 | o << 2 & 8 | y << 4 & 16 |
               o << 5 & 32) -
@@ -148,9 +148,9 @@ void gmplay8(void) {
       continue;         // drop frame if > 1 sec behind
     }
     gmlib(GMLIB_VSYNC); // wait for fb0 ready
-    for (y = 0; y < 1448; y++)
-      for (x = 0; x < 1072; x += 8) {
-        b = fbt[1072 / 8 * y + x / 8];
+    for (y = 0; y < KINDLE_RESY; y++)
+      for (x = 0; x < KINDLE_RESX; x += 8) {
+        b = fbt[KINDLE_RESX / 8 * y + x / 8];
         i = y * fs + x;
         fb0[i] = (b & 1) * 255;
         b >>= 1;
@@ -177,7 +177,7 @@ void gm_show_fb(unsigned char *frame) {
   u8 fbt[FBSIZE];
   preprocessFrame(frame, fbt);
 
-  unsigned int i, x, y, b, fbsize = (600 / 8 * 960);
+  unsigned int i, x, y, b, fbsize = FBSIZE;
 
   // teu += 130; // teu: next update time
   // if (getmsec() > teu + 1000) {
@@ -185,9 +185,9 @@ void gm_show_fb(unsigned char *frame) {
   //   return;         // drop frame if > 1 sec behind
   // }
   gmlib(GMLIB_VSYNC); // wait for fb0 ready
-  for (y = 0; y < 1448; y++)
-    for (x = 0; x < 1072; x += 8) {
-      b = fbt[1072 / 8 * y + x / 8];
+  for (y = 0; y < KINDLE_RESY; y++)
+    for (x = 0; x < KINDLE_RESX; x += 8) {
+      b = fbt[KINDLE_RESX / 8 * y + x / 8];
       i = y * fs + x;
       fb0[i] = (b & 1) * 255;
       b >>= 1;
@@ -214,18 +214,18 @@ void gm_show_fb(unsigned char *frame) {
 // op (init, update, vsync, close)
 //------------------------------------
 int gmlib(int op) {
-  static struct update_area_t ua = {0, 0, 1072, 1448, 21, NULL};
+  static struct update_area_t ua = {0, 0, KINDLE_RESX, KINDLE_RESY, 21, NULL};
   static struct mxcfb_update_data ur = {
-      {0, 0, 1072, 1448}, 257, 0, 1, 0x1001, 0, {0, 0, 0, {0, 0, 0, 0}}};
+      {0, 0, KINDLE_RESX, KINDLE_RESY}, 257, 0, 1, 0x1001, 0, {0, 0, 0, {0, 0, 0, 0}}};
   static struct mxcfb_update_data51 ur51 = {
-      {0, 0, 1072, 1448}, 257, 0, 1, 0, 0, 0x1001, 0, {0, 0, 0, {0, 0, 0, 0}}};
+      {0, 0, KINDLE_RESX, KINDLE_RESY}, 257, 0, 1, 0, 0, 0x1001, 0, {0, 0, 0, {0, 0, 0, 0}}};
   static int eupcode;
   static void *eupdata = NULL;
   struct fb_var_screeninfo screeninfo;
   if (GMLIB_INIT == op) {
     #ifdef X_PC
     ppb = 1;
-    fs = 608;
+    fs = KINDLE_RESX + 8;
     fb0 = malloc(KINDLE_FB_RES_X * KINDLE_FB_RES_Y);
     colorFb = malloc(KINDLE_FB_RES_X * KINDLE_FB_RES_Y * 4);
     initWindow();
